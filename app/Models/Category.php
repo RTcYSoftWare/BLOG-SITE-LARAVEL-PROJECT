@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Article;
 
 /**
  * App\Models\Category
@@ -45,5 +46,11 @@ class Category extends Model
         // laravelde tablolar arası ilişkilerde kolaylıkla kullanılır.
         // biz burada bire çok ilişkisine uygun bir tanımlama yaptık.
     }
+
+    public function articleAdd(){
+        return $this->hasOne(\App\Models\Article::class);
+    }
+
+
 
 }

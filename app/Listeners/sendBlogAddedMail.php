@@ -28,9 +28,9 @@ class sendBlogAddedMail
      */
     public function handle(BlogAddedEvent $event)
     {
-        Notification::send($event->admin, new Deneme($event->enrollmentData,"asdf",$event->gonderimTuru));
+        Notification::send($event->admin, new  Deneme($event->enrollmentData,"asdf",$event->gonderimTuru));
         //\Log::info("Burası Tetiklendi ve ".$event->admin->email." Adresine Mail Gönderildi.");
     }
 }
 
-// php artisan make:listenner sendBlogAddedMail --event=BlogAddedEvent listener oluşturup event'a bağlamak.
+// php artisan make:listener sendBlogAddedMail --event=BlogAddedEvent listener oluşturup event'a bağlamak.

@@ -5,7 +5,10 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary float-right"><strong>{{$articles->count()}}</strong> makale bulundu
-                <a href="{{route("admin.trashed.article")}}" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i> Silinen Makaleler</a>
+                <a href="{{route("admin.trashed.article")}}" class="btn btn-warning btn-sm">
+                    <i class="fa fa-trash"></i>
+                    Silinen Makaleler
+                </a>
             </h6>
         </div>
         <div class="card-body">
@@ -22,8 +25,8 @@
                         <th>İşlemler</th>
                     </tr>
                     </thead>
-
                     <tbody>
+                    @can("viewAny", \App\Models\Admin::class)
                     @foreach($articles as $item)
                         <tr>
                             <td>
@@ -39,14 +42,19 @@
                                        @if($item->status == 1) checked @endif data-toggle="toggle">
                             </td>
                             <td>
-                                <a href="#" target="_blank" title="Görüntüle" class="btn btn-sm btn-success"><i
-                                        class="fa fa-eye"></i></a>
-                                <a href="{{route("admin.makaleler.edit",$item->id)}}" title="Düzenle"
-                                   class="btn btn-sm btn-primary"><i class="fa fa-pen"></i></a>
-                                <a href="{{route("admin.delete.article",$item->id)}}" title="Sil" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></a>
+                                <a href="#" target="_blank" title="Görüntüle" class="btn btn-sm btn-success">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <a href="{{route("admin.makaleler.edit",$item->id)}}" title="Düzenle" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-pen"></i>
+                                </a>
+                                <a href="{{route("admin.delete.article",$item->id)}}" title="Sil" class="btn btn-sm btn-danger">
+                                    <i class="fa fa-times"></i>
+                                </a>
                             </td>
                         </tr>
                     @endforeach
+                    @endcan
                     </tbody>
                 </table>
             </div>

@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\AdminCrudEvent;
 use App\Events\BlogAddedEvent;
+use App\Listeners\AdminCreateListener;
+use App\Listeners\AdminUpdateListener;
 use App\Listeners\sendBlogAddedMail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -23,6 +26,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         BlogAddedEvent::class => [
             sendBlogAddedMail::class,
+        ],
+        AdminCrudEvent::class => [
+            AdminCreateListener::class,
+            AdminUpdateListener::class,
         ],
     ];
 

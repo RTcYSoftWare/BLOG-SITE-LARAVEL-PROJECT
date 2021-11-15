@@ -5,6 +5,8 @@ namespace App\Http;
 use App\Http\Middleware\isAdmin;
 use App\Http\Middleware\isLogin;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Spatie\Permission\Middlewares\PermissionMiddleware;
+use Spatie\Permission\Middlewares\RoleMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -66,6 +68,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         "isAdmin" => isAdmin::class, # oluşturduğumuz middleware i burada tanımladık.
-        "isLogin" => isLogin::class # giriş yaptıysa geri dönmesin.
+        "isLogin" => isLogin::class, # giriş yaptıysa geri dönmesin.
+        "role" => RoleMiddleware::class, # Spatie'nin otomatik oluşturduğu role middleware'i tanımladık.
+        "permission" => PermissionMiddleware::class # Spatie'nin otomatik oluşturduğu permission middleware'ini tanımladık.
     ];
 }

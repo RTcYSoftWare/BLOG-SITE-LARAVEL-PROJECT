@@ -21,6 +21,7 @@
             İçerik Yönetimi
         </div>
 
+        @role("SupperAdmin|Editor|Admin")
         <li class="nav-item">
             <a class="nav-link @if(Request::segment(2) == "makaleler") in @else collapsed @endif" href="#" data-toggle="collapse" data-target="#collapseTwo"
                aria-expanded="true" aria-controls="collapseTwo">
@@ -35,6 +36,7 @@
                 </div>
             </div>
         </li>
+        @endrole
 
         <li class="nav-item @if(Request::segment(2) == "kategoriler") active @endif">
             <a class="nav-link collapsed" href="{{route("admin.category.index")}}">
@@ -43,6 +45,7 @@
             </a>
         </li>
 
+        @role("Admin|SupperAdmin")
         <li class="nav-item">
             <a class="nav-link @if(Request::segment(2) == "sayfalar") in @else collapsed @endif" href="#" data-toggle="collapse" data-target="#collapseSayfa"
                aria-expanded="true" aria-controls="collapseTwo">
@@ -57,15 +60,46 @@
                 </div>
             </div>
         </li>
-
+        @endrole
 
         <hr class="sidebar-divider">
 
-
+        @role("SupperAdmin")
         <div class="sidebar-heading">
             Site Ayarları
         </div>
 
+
+        <li class="nav-item">
+            <a class="nav-link @if(Request::segment(2) == "adminler") in @else collapsed @endif" href="#" data-toggle="collapse" data-target="#collapseAdmin"
+               aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-user"></i>
+                <span>Adminler</span>
+            </a>
+            <div id="collapseAdmin" class="collapse @if(Request::segment(2) == "adminler") show @endif" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Admin İşlemleri</h6>
+                    <a class="collapse-item @if(Request::segment(2) == "adminler" and !Request::segment(3)) active @endif" href="{{route("admin.adminler.index")}}">Tüm Adminler</a>
+                    <a class="collapse-item @if(Request::segment(2) == "adminler" and Request::segment(3) == "create") active @endif" href="{{route("admin.adminler.yeni-admin")}}">Yeni Admin Oluştur</a>
+                </div>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @if(Request::segment(2) == "roller") in @else collapsed @endif" href="#" data-toggle="collapse" data-target="#collapseRole"
+               aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-user-lock"></i>
+                <span>Roller ve İzinler</span>
+            </a>
+            <div id="collapseRole" class="collapse @if(Request::segment(2) == "roller") show @endif" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Rol ve İzin İşlemleri</h6>
+                    <a class="collapse-item @if(Request::segment(2) == "roller" and !Request::segment(3)) active @endif" href="{{route("admin.roller.index")}}">Tüm Roller</a>
+                    <a class="collapse-item @if(Request::segment(2) == "roller" and Request::segment(3) == "create") active @endif" href="{{route("admin.adminler.yeni-admin")}}">Yeni Rol Oluştur</a>
+                    <a class="collapse-item @if(Request::segment(2) == "izinler" and !Request::segment(3)) active @endif">Tüm İzinler</a>
+                    <a class="collapse-item @if(Request::segment(2) == "izinler" and Request::segment(3) == "create") active @endif">Yeni İzin Oluştur</a>
+                </div>
+            </div>
+        </li>
 
         <li class="nav-item @if(Request::segment(2) == "ayarlar") active @endif">
             <a class="nav-link collapsed" href="{{route("admin.config.index")}}">
@@ -73,7 +107,7 @@
                 <span>Ayarlar</span>
             </a>
         </li>
-
+        @endrole
 
 
         <!-- Divider -->

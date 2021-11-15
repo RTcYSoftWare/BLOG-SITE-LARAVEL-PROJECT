@@ -74,11 +74,11 @@ Route::prefix("admin")->name("admin.")->middleware("isAdmin")->group(function ()
     Route::get("makaleler/silinenler",[ArticleController::class,"trashed"])->name("trashed.article");
 
     // MAKALE ROUTES
-    Route::resource("makaleler",ArticleController::class);
-    Route::get("/switch",[ArticleController::class,"switch"])->name("switch");
-    Route::get("/deletearticle/{id}",[ArticleController::class,"delete"])->name("delete.article");
-    Route::get("/harddeletearticle/{id}",[ArticleController::class,"hardDelete"])->name("hard.delete.article");
-    Route::get("/recoverarticle/{id}",[ArticleController::class,"recover"])->name("recover.article");
+    Route::resource("makaleler",ArticleController::class)->middleware("role:Editor|SupperAdmin");
+    Route::get("/switch",[ArticleController::class,"switch"])->name("switch")->middleware("permission:edit articles");
+    Route::get("/deletearticle/{id}",[ArticleController::class,"delete"])->name("delete.article")->middleware("can:viewAny,admin")->middleware("permission:delete articles"); // yazdığımız policy'i kullanarak burada delete'kısmını kapattık.
+    Route::get("/harddeletearticle/{id}",[ArticleController::class,"hardDelete"])->name("hard.delete.article")->middleware("permission:delete articles");
+    Route::get("/recoverarticle/{id}",[ArticleController::class,"recover"])->name("recover.article")->middleware("permission:edit articles");
 
     // KATEGORİ ROUTES
     Route::get("/kategoriler",[\App\Http\Controllers\Back\Category::class,"index"])->name("category.index");
@@ -89,18 +89,38 @@ Route::prefix("admin")->name("admin.")->middleware("isAdmin")->group(function ()
     Route::post("/kategoriler/delete",[\App\Http\Controllers\Back\Category::class,"categoryDelete"])->name("category.delete");
 
     // PAGE'S ROUTES
-    Route::get("sayfalar",[\App\Http\Controllers\Back\PageController::class,"index"])->name("page.index");
-    Route::get("/sayfalar/switch",[\App\Http\Controllers\Back\PageController::class,"switch"])->name("page.switch");
-    Route::get("/sayfalar/create",[\App\Http\Controllers\Back\PageController::class,"create"])->name("page.create");
-    Route::post("/sayfalar/create",[\App\Http\Controllers\Back\PageController::class,"createPage"])->name("page.create.post");
-    Route::get("/sayfalar/update/{id}",[\App\Http\Controllers\Back\PageController::class,"update"])->name("page.update");
-    Route::post("/sayfalar/update/{id}",[\App\Http\Controllers\Back\PageController::class,"updatePage"])->name("page.update.post");
-    Route::get("/sayfalar/delete/{id}",[\App\Http\Controllers\Back\PageController::class,"deletePage"])->name("page.delete");
-    Route::get("/sayfalar/order",[\App\Http\Controllers\Back\PageController::class,"ordersPage"])->name("page.orders");
+    Route::prefix("/sayfalar")->name("page.")->middleware("role:Admin|SupperAdmin")->group(function (){
+        Route::get("/",[\App\Http\Controllers\Back\PageController::class,"index"])->name("index");
+        Route::get("/switch",[\App\Http\Controllers\Back\PageController::class,"switch"])->name("switch");
+        Route::get("/create",[\App\Http\Controllers\Back\PageController::class,"create"])->name("create");
+        Route::post("/create",[\App\Http\Controllers\Back\PageController::class,"createPage"])->name("create.post");
+        Route::get("/update/{id}",[\App\Http\Controllers\Back\PageController::class,"update"])->name("update");
+        Route::post("/update/{id}",[\App\Http\Controllers\Back\PageController::class,"updatePage"])->name("update.post");
+        Route::get("/delete/{id}",[\App\Http\Controllers\Back\PageController::class,"deletePage"])->name("delete");
+        Route::get("/order",[\App\Http\Controllers\Back\PageController::class,"ordersPage"])->name("orders");
+    });
+
 
     // CONFIG'S ROUTES
-    Route::post("/ayarlar/update",[\App\Http\Controllers\Back\ConfigController::class,"pageUpdate"])->name("config.update");
-    Route::get("/ayarlar",[\App\Http\Controllers\Back\ConfigController::class,"index"])->name("config.index");
+    Route::post("/ayarlar/update",[\App\Http\Controllers\Back\ConfigController::class,"pageUpdate"])->name("config.update")->middleware("role:SupperAdmin");
+    Route::get("/ayarlar",[\App\Http\Controllers\Back\ConfigController::class,"index"])->name("config.index")->middleware("role:SupperAdmin");
+
+    // ADMIN'S ROUTES
+    Route::prefix("/adminler")->name("adminler.")->middleware("role:SupperAdmin")->group(function (){
+        Route::get("/",[\App\Http\Controllers\Back\AdminCrudController::class,"Adminler"])->name("index");
+        Route::get("/yeni-admin",[\App\Http\Controllers\Back\AdminCrudController::class,"YeniAdmin"])->name("yeni-admin");
+        Route::post("/yeni-admin",[\App\Http\Controllers\Back\AdminCrudController::class,"YeniAdminKaydet"])->name("yeni-admin-post");
+        Route::get("/edit-admin/{id}",[\App\Http\Controllers\Back\AdminCrudController::class,"editAdmin"])->name("edit-admin");
+        Route::post("/edit-admin",[\App\Http\Controllers\Back\AdminCrudController::class,"updateAdmin"])->name("edit-admin-post");
+        Route::get("/delete-admin/{id}",[\App\Http\Controllers\Back\AdminCrudController::class,"deleteAdmin"])->name("delete-admin");
+    });
+
+    Route::prefix("/roller")->name("roller.")->group(function (){
+        Route::get("/",[\App\Http\Controllers\Back\RoleCrudController::class,"index"])->name("index");
+        Route::get("/edit-role/{id}",[\App\Http\Controllers\Back\RoleCrudController::class,"editRole"])->name("edit-role");
+        Route::get("/give-to-permission",[\App\Http\Controllers\Back\RoleCrudController::class,"addPermissionToRole"])->name("give-to-permission");
+    });
+
 
     Route::get("cikis",[\App\Http\Controllers\Back\Auth::class,"logout"])->name("logout");
 });

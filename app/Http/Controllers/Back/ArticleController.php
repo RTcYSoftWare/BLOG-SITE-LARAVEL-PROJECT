@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Back;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ArticleRequest;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\Category;
 use File;
+use Illuminate\Support\Facades\Cache;
 
 class ArticleController extends Controller
 {
@@ -17,6 +20,28 @@ class ArticleController extends Controller
      */
     public function index()
     {
+        //$this->authorize("viewAny", Admin::class); // bizim oluşturduğumuz Policy'e gider kontrolü yapar. Eğer true ise devam eder. Değilse 403 sayfasına yönelendirir.
+
+
+        // CACHE İŞLEMLERİ
+        // ****
+        // cache'den veri çekme şu anki kullandığımız file ile cache. Database madcache ve redis gibi bir çok farklı cache metodu var. kodda kullanımları arasında pek bir fark yok hepsi aynı şekilde kullanılıyor.
+        // cache'in driver'ını da env. dosyasından değiştiriyoruz.
+        // farklı driver'lar kullanırsak gerkli ayarlamaları cache.php dosyasından da aypmamız gerekiyor.
+        // databse kullanılırsa php artisan cache:table yaparak vt. tablosu için migration oluşturulur.
+        // ardından php artisan migrate ile tablo oluşturulur. Bu tabloya bütün veri tek satıra basar ve gider o satırdan okur. çok sağlıklı bir işlem değil.
+//        if(Cache::has("articles")){
+//            $articles = Cache::get("articles");
+//            return view("back.articles.index", compact("articles"));
+//        }
+        // Cache::put("articles", $articles, now()->addMinutes(10)); // cache 'e veri koyma
+        // MemCached kısmı; env. dosyasında cache bölümüne memcached yazıyoruz.
+        // composer require ext-memcached
+        // ****
+
+
+        // $articles = Article::with("category")->orderBy("created_at", "ASC")->get();
+
         $articles = Article::with("category")->orderBy("created_at", "ASC")->get();
         return view("back.articles.index", compact("articles"));
     }
@@ -40,22 +65,29 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+//        $articleRequest = new ArticleRequest();
+//        $articleRequest->rules();
+
         $request->validate([
             "title" => "min:3",
             "image" => "required|image|mimes:jpeg,png,jpg|max:2048"
         ]);
 
-        $article = new Article();
-        $article->title = $request->title;
-        $article->category_id = $request->category;
-        $article->content = $request->content;
-        $article->slug = str_slug($request->title);
-        if ($request->hasFile("image")) { # remin gelip gelmediğini kontrol ettik.
-            $imageName = str_slug($request->title) . "." . $request->image->getClientOriginalExtension(); # resmin uzantısını aldık.
-            $request->image->move(public_path("uploads"), $imageName); # uploads klasörüne isimle kaydettik resmimizi.
-            $article->image = "uploads/" . $imageName;
-        }
-        $article->save();
+        $category = new Category();
+        $category->articleAdd()->create($request->get());
+
+//        $article = new Article();
+//        $article->title = $request->title;
+//        $article->category_id = $request->category;
+//        $article->content = $request->content;
+//        $article->slug = str_slug($request->title);
+//        if ($request->hasFile("image")) { # resmin gelip gelmediğini kontrol ettik.
+//            $imageName = str_slug($request->title) . "." . $request->image->getClientOriginalExtension(); # resmin uzantısını aldık.
+//            $request->image->move(public_path("uploads"), $imageName); # uploads klasörüne isimle kaydettik resmimizi.
+//            $article->image = "uploads/" . $imageName;
+//        }
+//
+//        $article->save();
         toastr()->success("Başarılı", "Makale başarıyla oluşturuldu");
         return redirect()->route("admin.makaleler.index");
     }
@@ -134,6 +166,7 @@ class ArticleController extends Controller
 
     public function delete($id)
     {
+//        $this->authorize("delete",Admin::class);
         Article::findOrFail($id)->delete();
         toastr()->success("Makale Silinen Makalelere Taşındı");
         return redirect()->route("admin.makaleler.index");

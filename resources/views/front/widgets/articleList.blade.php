@@ -7,7 +7,7 @@
                 <h3 class="post-subtitle">{{str_limit($article->content,75)}}</h3>
             </a>
             <p class="post-meta">
-                Kategori:
+                Kategori:+
                 <a href="#!">{{$article->getCategory->name}}</a>
                 <span class="float-end"> {{$article->created_at->diffForHumans()}} </span>
             </p>

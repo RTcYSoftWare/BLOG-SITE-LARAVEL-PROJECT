@@ -5,7 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable; # laravelin auth kütüphanesini ekledik. ven configde ayar yaptık.
-use Illuminate\Notifications\Notifiable; # Notification class'ını bu modelle birleştirdik.
+use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
+
+# Notification class'ını bu modelle birleştirdik.
 
 /**
  * App\Models\Admin
@@ -28,5 +32,7 @@ use Illuminate\Notifications\Notifiable; # Notification class'ını bu modelle b
 class Admin extends Authenticatable # extend edilen class değişmeli  normalde Model 'di
 {
     use HasFactory;
-    use Notifiable;
+    use Notifiable; // trait ler sınıfları genişletmek için kullanılır
+    use HasRoles; // dışarıdan eklediğimiz Spati kütüphanesinin trait'i ni ekledik.
+
 }
